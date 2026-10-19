@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>NEON RUSH — Circuito do Futuro</title>
+<style>
+:root{--cyan:#42f5e9;--pink:#ff4fd8;--lime:#c6ff4d;--bg:#080b18;--panel:rgba(14,20,42,.88);--muted:#9ba9c8}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:#f5f7ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+body{overflow-x:hidden;background:radial-gradient(ellipse at 50% -15%,#252b62 0%,#0b1024 43%,#060812 100%)}
+button{font:inherit;cursor:pointer;color:inherit;border:0}
+.app{max-width:1280px;margin:auto;padding:18px clamp(10px,2.5vw,28px) 24px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--cyan),#5865ff 55%,var(--pink));display:grid;place-items:center;box-shadow:0 0 30px #42f5e944;font-size:23px}
+.brand h1{font-size:clamp(19px,3vw,27px);margin:0;letter-spacing:3px;font-weight:950}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2.5px;margin-top:2px}
+.pill{border:1px solid #ffffff20;background:#ffffff08;border-radius:999px;padding:9px 13px;color:#c8d3f0;font-size:12px;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:stretch}
+.game-card,.side-card{border:1px solid #ffffff1c;background:linear-gradient(145deg,#141b36d9,#090e20ed);border-radius:22px;overflow:hidden;box-shadow:0 18px 55px #0005}
+.game-head{display:flex;align-items:center;justify-content:space-between;padding:14px 17px;border-bottom:1px solid #ffffff12;gap:10px}
+.track-name{font-weight:800;letter-spacing:1px;font-size:13px}.track-name span{color:var(--cyan)}.live{color:var(--lime);font-size:10px;letter-spacing:2px}
+.canvas-wrap{position:relative;background:#090d1d;aspect-ratio:16/10;min-height:300px;max-height:650px}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:absolute;inset:12px 12px auto;display:flex;gap:8px;pointer-events:none;flex-wrap:wrap}
+.stat{min-width:74px;padding:8px 10px;border:1px solid #ffffff24;background:#080b18b8;backdrop-filter:blur(10px);border-radius:12px}
+.stat label{display:block;font-size:9px;color:#9daacb;letter-spacing:1.5px}.stat strong{display:block;font-size:19px;line-height:1.25;font-variant-numeric:tabular-nums}
+.stat strong em{font-size:10px;font-style:normal;color:var(--cyan)}
+.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,#080b1840,#080b18c9);text-align:center}
+.overlay-box{max-width:420px;width:100%;padding:clamp(18px,4vw,30px);border:1px solid #ffffff27;border-radius:22px;background:#0a1026d9;backdrop-filter:blur(14px);box-shadow:0 0 70px #5b55ff18}
+.kicker{font-size:10px;letter-spacing:4px;color:var(--cyan);font-weight:900}.overlay h2{font-size:clamp(27px,5vw,46px);line-height:.98;letter-spacing:-1px;margin:12px 0}.overlay h2 span{color:var(--pink)}.overlay p{color:#b7c2df;font-size:13px;line-height:1.6;margin:12px 0 20px}
+.primary{background:linear-gradient(100deg,var(--cyan),#8affd4);color:#07121d;border-radius:12px;padding:13px 20px;font-weight:950;letter-spacing:1px;box-shadow:0 7px 25px #42f5e92a;transition:transform .15s,filter .15s}.primary:hover{transform:translateY(-2px);filter:brightness(1.08)}.secondary{background:#ffffff0b;border:1px solid #ffffff24;border-radius:12px;padding:12px 15px;font-weight:800}
+.overlay-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+.game-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 16px;color:var(--muted);font-size:11px;flex-wrap:wrap}
+.progress{height:5px;background:#ffffff12;flex:1;min-width:70px;border-radius:20px;overflow:hidden}.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--pink));transition:width .2s}
+.side{display:flex;flex-direction:column;gap:16px}.side-card{padding:17px}.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.section-title h3{font-size:12px;letter-spacing:2px;margin:0}.section-title span{font-size:10px;color:var(--cyan)}
+.mode{padding:12px;border:1px solid #ffffff16;background:#ffffff05;border-radius:14px;display:flex;gap:11px;align-items:center;margin:8px 0;cursor:pointer;transition:.15s}.mode:hover,.mode.active{border-color:#42f5e988;background:#42f5e910}.mode-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#42f5e916;font-size:20px}.mode b{font-size:12px;display:block}.mode small{font-size:10px;color:var(--muted);display:block;margin-top:4px}.mode .check{margin-left:auto;color:var(--cyan);font-size:17px}
+.tip{color:#b7c2df;font-size:12px;line-height:1.65}.tip strong{color:#fff}.key{display:inline-grid;place-items:center;min-width:25px;height:24px;padding:0 6px;border-radius:6px;border:1px solid #ffffff30;background:#ffffff0b;color:#e7edff;font-size:10px;margin:2px}
+.best{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #ffffff12;padding-top:12px;margin-top:12px;font-size:11px;color:var(--muted)}.best strong{color:var(--lime);font-size:16px}
+.mobile-controls{display:none;justify-content:space-between;align-items:center;gap:16px;padding:12px 16px;background:#070b18;border-top:1px solid #ffffff12}
+.control-cluster{display:flex;gap:9px}.touch-btn{width:57px;height:51px;border-radius:14px;border:1px solid #ffffff25;background:linear-gradient(145deg,#20294a,#10162d);font-size:22px;box-shadow:0 5px 0 #050712;touch-action:none;user-select:none}.touch-btn:active,.touch-btn.pressed{transform:translateY(3px);box-shadow:0 2px 0 #050712;border-color:var(--cyan)}.touch-btn.boost{width:65px;color:var(--lime);font-size:11px;font-weight:900;letter-spacing:1px}
+.bottom-note{text-align:center;color:#596582;font-size:10px;margin-top:16px;letter-spacing:1px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.canvas-wrap{min-height:280px}.side-card{padding:14px}}
+@media(max-width:560px){.app{padding:10px 8px 18px}.topbar{margin-bottom:10px}.brand{gap:8px}.logo{width:38px;height:38px}.pill{font-size:10px;padding:8px}.layout{gap:10px}.game-card,.side-card{border-radius:17px}.game-head{padding:11px 12px}.canvas-wrap{aspect-ratio:4/5;min-height:390px;max-height:62vh}.hud{inset:9px 8px auto;gap:5px}.stat{min-width:61px;padding:6px 7px}.stat label{font-size:8px}.stat strong{font-size:16px}.mobile-controls{display:flex}.side{grid-template-columns:1fr}.side-card{padding:14px}.game-footer{padding:10px 12px}.overlay-box{padding:18px}.overlay p{font-size:12px}.bottom-note{font-size:9px}}
+@media(orientation:landscape) and (max-height:550px){.canvas-wrap{aspect-ratio:16/7;min-height:230px;max-height:68vh}.side{grid-template-columns:1fr 1fr}.app{padding-top:8px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">⚡</div><div><h1>NEON RUSH</h1><small>FUTURE SPORTS LEAGUE</small></div></div>
+    <div class="pill">🏁 TEMPORADA 01 <span style="color:var(--cyan)">/ 2089</span></div>
+  </header>
+  <main class="layout">
+    <section class="game-card">
+      <div class="game-head"><div class="track-name">CIRCUITO <span>•</span> NEON CITY</div><div class="live">● ARCADE MODE</div></div>
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="game" aria-label="Jogo de corrida Neon Rush"></canvas>
+        <div class="hud">
+          <div class="stat"><label>VELOCIDADE</label><strong id="speed">000 <em>KM/H</em></strong></div>
+          <div class="stat"><label>VOLTA</label><strong id="lap">1 <em>/ 3</em></strong></div>
+          <div class="stat"><label>POSIÇÃO</label><strong id="position">1 <em>/ 6</em></strong></div>
+          <div class="stat"><label>TEMPO</label><strong id="time">00:00</strong></div>
+        </div>
+        <div class="overlay" id="overlay">
+          <div class="overlay-box">
+            <div class="kicker">BEM-VINDO AO FUTURO</div>
+            <h2>DOMINE A <span>PISTA.</span></h2>
+            <p>Desvie dos rivais, carregue seu turbo e conquiste o pódio no circuito mais elétrico da cidade.</p>
+            <div class="overlay-actions"><button class="primary" id="startBtn">▶ INICIAR CORRIDA</button><button class="secondary" id="howBtn">COMO JOGAR</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-controls">
+        <div class="control-cluster"><button class="touch-btn" data-control="left" aria-label="Virar à esquerda">◀</button><button class="touch-btn" data-control="right" aria-label="Virar à direita">▶</button></div>
+        <div class="control-cluster"><button class="touch-btn" data-control="brake" aria-label="Frear">▼</button><button class="touch-btn boost" data-control="boost" aria-label="Turbo">⚡ TURBO</button></div>
+      </div>
+      <div class="game-footer"><span id="status">Pronto para largar</span><div class="progress"><div id="progress"></div></div><span id="distance">0 / 3 voltas</span></div>
+    </section>
+    <aside class="side">
+      <section class="side-card">
+        <div class="section-title"><h3>MODOS DE JOGO</h3><span>ESCOLHA</span></div>
+        <div class="mode active" data-mode="race"><div class="mode-icon">🏆</div><div><b>Grande Prêmio</b><small>3 voltas • rivais na pista</small></div><div class="check">✓</div></div>
+        <div class="mode" data-mode="time"><div class="mode-icon">⏱️</div><div><b>Contra o Tempo</b><small>Faça a maior distância possível</small></div><div class="check"></div></div>
+        <div class="mode" data-mode="survival"><div class="mode-icon">💥</div><div><b>Sobrevivência</b><small>Evite colisões e dure mais</small></div><div class="check"></div></div>
+      </section>
+      <section class="side-card">
+        <div class="section-title"><h3>CONTROLES</h3><span>GUIA RÁPIDO</span></div>
+        <div class="tip"><strong>Computador</strong><br><span class="key">A</span> <span class="key">D</span> ou <span class="key">←</span> <span class="key">→</span> dirigir<br><span class="key">↑</span> acelerar · <span class="key">↓</span> frear<br><span class="key">ESPAÇO</span> turbo</div>
+        <div class="tip" style="margin-top:12px"><strong>Celular e tablet</strong><br>Use os botões na parte inferior da pista. Segure ⚡ TURBO para disparar.</div>
+        <div class="best"><span>SEU RECORDE</span><strong id="best">0 pts</strong></div>
+      </section>
+      <section class="side-card">
+        <div class="section-title"><h3>GARAGEM</h3><span>VEÍCULO</span></div>
+        <div style="display:flex;align-items:center;gap:12px"><div style="font-size:34px;filter:drop-shadow(0 0 10px #42f5e9)">🏎️</div><div><b style="font-size:13px">PHANTOM X-9</b><div style="font-size:10px;color:var(--muted);margin-top:4px">Classe elétrica • Ultra leve</div></div></div>
+        <div style="display:flex;gap:6px;margin-top:13px"><span style="height:5px;border-radius:9px;background:var(--cyan);flex:8"></span><span style="height:5px;border-radius:9px;background:var(--pink);flex:6"></span><span style="height:5px;border-radius:9px;background:#ffffff1c;flex:3"></span></div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:7px"><span>VELOCIDADE 92</span><span>CONTROLE 78</span><span>TURBO 85</span></div>
+      </section>
+    </aside>
+  </main>
+  <div class="bottom-note">NEON RUSH © 2089 · PISE FUNDO, RESPEITE A PISTA.</div>
+</div>
+<script>
+(() => {
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const wrap=document.getElementById('canvasWrap');
+const $=id=>document.getElementById(id);
+let W=900,H=560,dpr=1,raf=0,last=0,running=false,mode='race',elapsed=0,dist=0,score=0,best=Number(localStorage.getItem('neonRushBest')||0),speed=0,playerX=0,steer=0,turbo=100,turboActive=false,collisions=0,finish=false,shake=0;
+let keys={},rivals=[],particles=[],roadOffset=0,spawnTimer=0,roadCurve=0;
+$('best').textContent=best.toLocaleString()+' pts';
+function resize(){const r=wrap.getBoundingClientRect();dpr=Math.min(window.devicePixelRatio||1,2);W=Math.max(300,r.width);H=Math.max(280,r.height);canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}
+window.addEventListener('resize',resize);resize();
+function reset(){elapsed=0;dist=0;score=0;speed=0;playerX=0;steer=0;turbo=100;turboActive=false;collisions=0;finish=false;roadOffset=0;spawnTimer=0;rivals=[];particles=[];for(let i=0;i<5;i++)rivals.push(makeRival(-100-i*145,[-.65,-.25,.25,.65,0][i]));$('status').textContent='Corrida em andamento';$('progress').style.width='0%';$('distance').textContent='0 / '+(mode==='race'?'3 voltas':'∞');updateHud()}
+function makeRival(y,x){return {y,x,spd:.48+Math.random()*.32,color:['#ff4fd8','#c6ff4d','#8b75ff','#ff8b4a','#41a9ff'][Math.floor(Math.random()*5)],w:27+Math.random()*3,passed:false}}
+function start(){if(running)return;reset();running=true;$('overlay').style.display='none';last=performance.now();raf=requestAnimationFrame(loop)}
+function end(won=false){running=false;finish=true;cancelAnimationFrame(raf);let pts=Math.floor(score+dist*8+(won?1000:0));if(pts>best){best=pts;localStorage.setItem('neonRushBest',best);$('best').textContent=best.toLocaleString()+' pts'}$('overlay').style.display='flex';$('overlay').innerHTML=`<div class="overlay-box"><div class="kicker">${won?'🏆 CORRIDA CONCLUÍDA':'FIM DE JOGO'}</div><h2>${won?'VOCÊ É <span>CAMPEÃO!</span>':'TENTE <span>NOVAMENTE.</span>'}</h2><p>Distância: <b>${(dist/1000).toFixed(2)} km</b><br>Pontuação: <b>${pts.toLocaleString()} pts</b> · Colisões: <b>${collisions}</b></p><div class="overlay-actions"><button class="primary" id="startBtn">↻ CORRER DE NOVO</button><button class="secondary" id="menuBtn">MENU</button></div></div>`;$('startBtn').onclick=start;$('menuBtn').onclick=showMenu;$('status').textContent=won?'Vitória! Você cruzou a linha.':'Corrida encerrada';}
+function showMenu(){running=false;$('overlay').style.display='flex';$('overlay').innerHTML=`<div class="overlay-box"><div class="kicker">BEM-VINDO AO FUTURO</div><h2>DOMINE A <span>PISTA.</span></h2><p>Desvie dos rivais, carregue seu turbo e conquiste o pódio no circuito mais elétrico da cidade.</p><div class="overlay-actions"><button class="primary" id="startBtn">▶ INICIAR CORRIDA</button><button class="secondary" id="howBtn">COMO JOGAR</button></div></div>`;$('startBtn').onclick=start;$('howBtn').onclick=howTo;}
+function howTo(){$('overlay').innerHTML=`<div class="overlay-box"><div class="kicker">GUIA DO PILOTO</div><h2>ACELERE. <span>DESVIE.</span></h2><p>Use ← → para mudar de faixa, ↑ para acelerar e ↓ para frear. Segure ESPAÇO para usar o turbo. Evite os rivais: cada batida reduz sua velocidade!</p><div class="overlay-actions"><button class="primary" id="startBtn">ENTENDI — JOGAR</button><button class="secondary" id="menuBtn">VOLTAR</button></div></div>`;$('startBtn').onclick=start;$('menuBtn').onclick=showMenu}
+$('startBtn').onclick=start;$('howBtn').onclick=howTo;
+document.querySelectorAll('.mode').forEach(el=>el.addEventListener('click',()=>{if(running)return;document.querySelectorAll('.mode').forEach(m=>{m.classList.remove('active');m.querySelector('.check').textContent=''});el.classList.add('active');el.querySelector('.check').textContent='✓';mode=el.dataset.mode;$('distance').textContent='0 / '+(mode==='race'?'3 voltas':'∞')}));
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' '].includes(e.key))e.preventDefault();keys[e.key.toLowerCase()]=true;if((e.key==='Enter')&&!running)start()},{passive:false});
+window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+document.querySelectorAll('[data-control]').forEach(btn=>{const key=btn.dataset.control;const down=e=>{e.preventDefault();keys['touch_'+key]=true;btn.classList.add('pressed')},up=e=>{e.preventDefault();keys['touch_'+key]=false;btn.classList.remove('pressed')};btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointercancel',up);btn.addEventListener('pointerleave',up)});
+function held(...names){return names.some(n=>keys[n])}
+function updateHud(){ $('speed').innerHTML=String(Math.round(speed*270)).padStart(3,'0')+' <em>KM/H</em>';$('lap').innerHTML=(mode==='race'?Math.min(3,Math.floor(dist/3200)+1):'∞')+' <em>/ '+(mode==='race'?'3':'∞')+'</em>';$('position').innerHTML=(1+Math.min(5,Math.floor(score/1600)))+' <em>/ 6</em>';$('time').textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(Math.floor(elapsed%60)).padStart(2,'0');$('progress').style.width=(mode==='race'?Math.min(100,dist/9600*100):Math.min(100,dist/6000*100))+'%';$('distance').textContent=mode==='race'?Math.min(3,Math.floor(dist/3200))+' / 3 voltas':(dist/1000).toFixed(1)+' km'}
+function roadAt(y){let p=(y/H);let horizon=H*.29;let t=Math.max(0,(y-horizon)/(H-horizon));let center=W*.5+Math.sin(roadOffset*.0007+t*3)*W*.095+Math.sin(roadOffset*.00027+t*6)*W*.04;let half=W*(.09+t*.39);return {center,half,t}}
+function drawRoad(){ctx.fillStyle='#0b1727';ctx.fillRect(0,0,W,H);let sky=ctx.createLinearGradient(0,0,0,H*.42);sky.addColorStop(0,'#080d24');sky.addColorStop(1,'#20244d');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*.42);
+ // skyline
+ for(let i=0;i<26;i++){let x=(i*83-(roadOffset*.11)%83);let bw=22+(i*17%34),bh=30+(i*43%105);ctx.fillStyle=i%3===0?'#1b2b53':'#111a39';ctx.fillRect(x,H*.29-bh,bw,bh);ctx.fillStyle=i%2?'#42f5e9':'#ff4fd8';for(let wy=H*.29-bh+8;wy<H*.29-5;wy+=12)for(let wx=x+5;wx<x+bw-3;wx+=10){ctx.globalAlpha=.2+((i+Math.floor(wy))%3)*.13;ctx.fillRect(wx,wy,3,4)}ctx.globalAlpha=1}
+ // road polygons top to bottom
+ const horizon=H*.29;let top=roadAt(horizon),bottom=roadAt(H);
+ ctx.fillStyle='#102d2b';ctx.beginPath();ctx.moveTo(0,horizon);ctx.lineTo(W,horizon);ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.fill();
+ ctx.fillStyle='#34354c';ctx.beginPath();ctx.moveTo(top.center-top.half,horizon);ctx.lineTo(top.center+top.half,horizon);ctx.lineTo(bottom.center+bottom.half,H);ctx.lineTo(bottom.center-bottom.half,H);ctx.closePath();ctx.fill();
+ // road edges and neon guardrails
+ for(let side of [-1,1]){ctx.strokeStyle=side<0?'#42f5e9':'#ff4fd8';ctx.lineWidth=3;ctx.shadowBlur=13;ctx.shadowColor=ctx.strokeStyle;ctx.beginPath();for(let y=horizon;y<=H;y+=8){let r=roadAt(y),x=r.center+side*r.half;if(y===horizon)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();ctx.shadowBlur=0}
+ // lane markers
+ for(let lane of [-1/3,1/3]){for(let y=horizon+((roadOffset*.7)%70);y<H;y+=70){let r=roadAt(y),x=r.center+lane*r.half;let len=10+r.t*22;ctx.fillStyle='#c9e4f3';ctx.globalAlpha=.22+r.t*.5;ctx.fillRect(x-1.5,y,3,len)}ctx.globalAlpha=1}
+ // road light streaks
+ for(let i=0;i<18;i++){let y=(i*61+(roadOffset*1.6)%61);if(y<H*.3)continue;let r=roadAt(y);ctx.fillStyle=i%2?'#42f5e9':'#ff4fd8';ctx.globalAlpha=.1+r.t*.22;ctx.fillRect(r.center-r.half-12,y,5,2);ctx.fillRect(r.center+r.half+7,y,5,2)}ctx.globalAlpha=1;
+}
+function drawCar(x,y,color,scale=1,isPlayer=false){ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.shadowColor=color;ctx.shadowBlur=isPlayer?20:10;
+ // shadow
+ ctx.fillStyle='#03050d';ctx.beginPath();ctx.ellipse(0,7,17,28,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(0,-28);ctx.lineTo(12,-14);ctx.lineTo(15,14);ctx.lineTo(10,25);ctx.lineTo(-10,25);ctx.lineTo(-15,14);ctx.lineTo(-12,-14);ctx.closePath();ctx.fill();
+ ctx.shadowBlur=0;ctx.fillStyle='#101a32';ctx.beginPath();ctx.moveTo(-8,-12);ctx.lineTo(-5,-21);ctx.lineTo(5,-21);ctx.lineTo(8,-12);ctx.lineTo(7,0);ctx.lineTo(-7,0);ctx.closePath();ctx.fill();
+ ctx.fillStyle=isPlayer?'#d7fffb':'#d8dfff';ctx.fillRect(-10,15,5,5);ctx.fillRect(5,15,5,5);
+ ctx.fillStyle=isPlayer?'#c6ff4d':'#ff4f82';ctx.fillRect(-9,-25,5,3);ctx.fillRect(4,-25,5,3);
+ ctx.fillStyle='#ffffffaa';ctx.fillRect(-1,-7,2,14);
+ if(isPlayer&&turboActive){ctx.fillStyle='#c6ff4d';ctx.globalAlpha=.8;ctx.beginPath();ctx.moveTo(-6,24);ctx.lineTo(0,43+Math.random()*10);ctx.lineTo(6,24);ctx.fill();ctx.globalAlpha=1}
+ ctx.restore()}
+function draw(){drawRoad();let horizon=H*.29;
+ // rivals rendered far to near
+ rivals.sort((a,b)=>a.y-b.y);for(const r of rivals){if(r.y<horizon-35||r.y>H+60)continue;let t=Math.max(.15,(r.y-horizon)/(H-horizon)),road=roadAt(r.y),x=road.center+r.x*road.half*.74;drawCar(x,r.y,r.color,.38+t*.85,false)}
+ let road=roadAt(H*.82),px=road.center+playerX*road.half*.72;drawCar(px,H*.82,'#42f5e9',Math.min(1.25,W/650),true);
+ // particles
+ for(const p of particles){ctx.globalAlpha=p.life;ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,p.size,p.size)}ctx.globalAlpha=1;
+ if(shake>0){shake--}
+}
+function loop(now){if(!running)return;let dt=Math.min(.035,(now-last)/1000||.016);last=now;elapsed+=dt;
+ let left=held('arrowleft','a','touch_left'),right=held('arrowright','d','touch_right'),acc=held('arrowup','w'),brake=held('arrowdown','s','touch_brake');turboActive=held(' ','touch_boost')&&turbo>0;
+ if(left)steer-=dt*3.3;else if(right)steer+=dt*3.3;else steer*=Math.pow(.06,dt);steer=Math.max(-1,Math.min(1,steer));
+ playerX+=steer*dt*(.85+speed*.45);playerX=Math.max(-1.02,Math.min(1.02,playerX));
+ if(turboActive){speed=Math.min(1.25,speed+dt*1.8);turbo=Math.max(0,turbo-dt*32);for(let i=0;i<3;i++)particles.push({x:W/2+(Math.random()-.5)*W*.08,y:H*.83+Math.random()*40,life:.3,size:2+Math.random()*4,color:'#c6ff4d'})}else{turbo=Math.min(100,turbo+dt*7);speed+=dt*(acc?.42:.1)}
+ if(brake)speed-=dt*.9;speed=Math.max(.18,Math.min(1.12,speed));dist+=speed*dt*280;score+=Math.round(speed*dt*12);roadOffset+=speed*dt*480;
+ spawnTimer+=dt;if(spawnTimer>1.0){spawnTimer=0;let lane=[-.75,-.4,0,.4,.75][Math.floor(Math.random()*5)];rivals.push(makeRival(H*.25,lane))}
+ for(let r of rivals){r.y+=dt*(100+speed*180)*(0.65+r.y/H*.6);if(r.y>H*.72&&!r.passed){let road=roadAt(H*.82),rx=road.center+r.x*road.half*.74,px=road.center+playerX*road.half*.72;if(Math.abs(rx-px)<30){collisions++;speed=Math.max(.22,speed*.52);shake=8;score=Math.max(0,score-100);r.y=H+100;r.passed=true;for(let i=0;i<12;i++)particles.push({x:px+(Math.random()-.5)*25,y:H*.82+(Math.random()-.5)*35,life:.55,size:2+Math.random()*5,color:'#ff4fd8'})}else if(!r.passed&&r.y>H*.88){score+=150;r.passed=true}}}
+ rivals=rivals.filter(r=>r.y<H+100);particles.forEach(p=>{p.y+=dt*100;p.life-=dt});particles=particles.filter(p=>p.life>0);
+ if(playerX<-.95||playerX>.95){speed=Math.max(.2,speed-dt*.5);score=Math.max(0,score-Math.floor(dt*30))}
+ updateHud();draw();
+ if(mode==='race'&&dist>=9600){end(true);return}if(mode==='time'&&elapsed>=60){end(true);return}if(mode==='survival'&&collisions>=5){end(false);return}
+ raf=requestAnimationFrame(loop)}
+// Draw a welcoming static scene before the first race
+draw();
+})();
+</script>
+</body>
+</html>
