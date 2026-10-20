@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lanchonete Frenética</title>
+<style>
+:root{--bg:#10172b;--panel:#1a2542;--cream:#fff1cf;--orange:#ffad35;--green:#47d879;--red:#ff5b67;--muted:#aab7d6}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#293b68 0,#10172b 55%);color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button{font:inherit;cursor:pointer;border:0;touch-action:manipulation}button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.app{max-width:1200px;margin:auto;padding:16px}.top{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:center}
+.stat,.panel{background:linear-gradient(145deg,#202d4d,#141d35);border:2px solid #34496f;border-radius:20px;box-shadow:0 8px 0 #0b1020;padding:12px 16px}
+.stat small{display:block;color:var(--muted);font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}.stat strong{font-size:1.35rem}
+.progress{height:8px;background:#0c1325;border-radius:9px;margin-top:6px;overflow:hidden}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#36d26c,#c5f75a);transition:width .3s}
+.roundbtn{background:#24365a;color:white;border:2px solid #536b9b;border-radius:50%;width:52px;height:52px;font-size:1.4rem}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 4px 10px}.eyebrow{color:#ffc76b;font-size:.78rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.hero h1{margin:2px 0;font-size:clamp(1.5rem,4vw,2.4rem);line-height:1.05}.hero p{margin:5px 0 0;color:#c2cce4;font-size:.92rem}
+.badge{background:#372b49;color:#ffd67a;border:1px solid #785340;padding:8px 12px;border-radius:999px;font-size:.85rem;font-weight:800;white-space:nowrap}
+.kitchen{display:grid;grid-template-columns:1.05fr 1.35fr;gap:14px}
+.orders{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.order{background:var(--cream);color:#2b2940;border-radius:18px;padding:12px 8px;text-align:center;border:3px solid transparent;min-height:145px;position:relative;box-shadow:0 5px 0 #9d7953;transition:transform .15s}
+.order.active{border-color:#ffb63e;transform:translateY(-3px)}.order.done{opacity:.48;filter:grayscale(.7)}.face{font-size:1.8rem}.order .name{font-weight:900;font-size:.88rem}.foodline{font-size:1.4rem;min-height:34px;letter-spacing:2px}.hearts{color:#e84b64;font-size:.8rem}.order .mini{font-size:.7rem;color:#655e6e}
+.workbench{background:linear-gradient(145deg,#2d3d60,#1a2541);border:2px solid #435a83;border-radius:20px;padding:14px;min-width:0}
+.workhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.workhead h2{font-size:1rem;margin:0}.workhead span{color:#b8c5e0;font-size:.8rem}
+.assembly{min-height:104px;background:#111a30;border:2px dashed #52658b;border-radius:16px;display:flex;justify-content:center;align-items:center;gap:5px;flex-wrap:wrap;padding:12px;margin-bottom:12px}
+.assembly .empty{color:#8d9cbd;font-size:.9rem;text-align:center}.ingredient{font-size:1.7rem;animation:pop .16s ease}.ingredient button{background:none;padding:0}
+@keyframes pop{from{transform:scale(.7)}to{transform:scale(1)}}
+.ingredients{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ing{background:#263758;color:#fff;border:2px solid #405982;border-radius:14px;padding:10px 3px;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:82px;transition:.15s}
+.ing:hover{background:#33496f;transform:translateY(-2px)}.ing .emoji{font-size:1.7rem}.ing small{font-size:.7rem;color:#c2cde3;font-weight:700}
+.actions{display:flex;gap:8px;margin-top:12px}.btn{padding:12px 14px;border-radius:13px;font-weight:900;flex:1}.serve{background:linear-gradient(#58e987,#24b95c);color:#07391d;box-shadow:0 4px 0 #13713c}.clear{background:#3a4665;color:white;border:1px solid #5d7098}
+.bottom{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-top:14px}.tip{color:#c2cde4;font-size:.85rem;padding:0 4px}.tip b{color:#ffd27a}.toast{min-height:24px;color:#9ff2b9;font-weight:800;text-align:right}
+.overlay{position:fixed;inset:0;background:#070b16d9;display:flex;align-items:center;justify-content:center;padding:18px;z-index:5}.modal{max-width:420px;width:100%;text-align:center;background:linear-gradient(145deg,#26375d,#141d35);border:2px solid #59719f;border-radius:24px;padding:28px;box-shadow:0 15px 50px #0008}.modal .big{font-size:3.6rem}.modal h2{font-size:1.8rem;margin:4px 0 8px}.modal p{color:#c4cfe7;line-height:1.5}.modal button{width:100%;margin-top:8px}.hidden{display:none!important}
+@media(max-width:760px){.app{padding:10px}.top{grid-template-columns:1fr 1fr auto}.top .stat:first-child{grid-column:span 2}.top .stat:nth-child(3){grid-column:span 2}.roundbtn{grid-column:3;grid-row:1}.hero{align-items:flex-start}.badge{font-size:.72rem;padding:7px 9px}.kitchen{grid-template-columns:1fr}.orders{gap:7px}.order{min-height:130px;padding:9px 4px}.foodline{font-size:1.2rem}.workbench{padding:10px}.ingredients{grid-template-columns:repeat(4,1fr)}.ing{min-height:74px}.bottom{grid-template-columns:1fr}.toast{text-align:left;min-height:20px}}
+@media(max-width:380px){.stat{padding:9px 10px}.stat strong{font-size:1.1rem}.orders{grid-template-columns:repeat(3,minmax(0,1fr))}.order .name{font-size:.75rem}.face{font-size:1.5rem}.ingredients{grid-template-columns:repeat(4,1fr)}.ing .emoji{font-size:1.4rem}.ing small{font-size:.62rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="stat"><small>🍳 Nível <span id="level">1</span></small><strong id="levelTitle">Novato do lanche</strong><div class="progress"><span id="progress"></span></div></div>
+    <div class="stat"><small>🪙 Moedas</small><strong id="coins">0</strong></div>
+    <div class="stat"><small>⏱ Tempo</small><strong id="timer">01:30</strong></div>
+    <button class="roundbtn" id="pauseBtn" aria-label="Pausar">Ⅱ</button>
+  </header>
+  <section class="hero"><div><div class="eyebrow">● Hora do rush</div><h1>LANCHONETE<br>FRENÉTICA 🍔</h1><p>Monte os pedidos antes que a paciência acabe!</p></div><div class="badge">⭐ <span id="served">0</span> pedidos</div></section>
+  <main class="kitchen">
+    <section><div class="workhead"><h2>🧑‍🍳 Clientes na fila</h2><span>Escolha um pedido</span></div><div class="orders" id="orders"></div></section>
+    <section class="workbench">
+      <div class="workhead"><h2>🧺 Sua bancada</h2><span id="selectedLabel">Pedido 1</span></div>
+      <div class="assembly" id="assembly"><div class="empty">Toque nos ingredientes para<br>começar a montar seu lanche!</div></div>
+      <div class="workhead"><h2>Ingredientes</h2><span>Toque para adicionar</span></div>
+      <div class="ingredients" id="ingredients"></div>
+      <div class="actions"><button class="btn clear" id="undoBtn">↩ Desfazer</button><button class="btn clear" id="resetBtn">🗑 Limpar</button><button class="btn serve" id="serveBtn">Servir pedido ✓</button></div>
+    </section>
+  </main>
+  <div class="bottom"><div class="tip">💡 Dica: <b>toque nos ingredientes na ordem que quiser</b> e compare com o pedido do cliente.</div><div class="toast" id="toast" role="status"></div></div>
+</div>
+<div class="overlay" id="overlay"><div class="modal"><div class="big">🍔</div><div class="eyebrow">Seu primeiro turno</div><h2 id="modalTitle">Bora abrir a lanchonete?</h2><p id="modalText">Atenda o máximo de clientes em 90 segundos. Cada pedido certo rende moedas e aumenta sua pontuação!</p><button class="btn serve" id="startBtn">Começar a jogar ▶</button></div></div>
+<script>
+const allItems=[
+ {id:'bun',name:'Pão',emoji:'🍞'},{id:'lettuce',name:'Alface',emoji:'🥬'},{id:'tomato',name:'Tomate',emoji:'🍅'},{id:'cheese',name:'Queijo',emoji:'🧀'},
+ {id:'patty',name:'Hambúrguer',emoji:'🥩'},{id:'fries',name:'Batata',emoji:'🍟'},{id:'drink',name:'Refri',emoji:'🥤'},{id:'egg',name:'Ovo',emoji:'🍳'},
+ {id:'pickle',name:'Picles',emoji:'🥒'},{id:'onion',name:'Cebola',emoji:'🧅'}
+];
+const recipes=[
+ {name:'X-Burger',face:'🧑🏻‍🦱',items:['bun','patty','cheese','tomato','lettuce'],display:['🍞','🥩','🧀','🍅','🥬']},
+ {name:'Combo feliz',face:'👩🏽‍🦰',items:['fries','drink'],display:['🍟','🥤']},
+ {name:'X-Salada',face:'🧑🏽‍🦱',items:['bun','patty','lettuce','tomato','onion'],display:['🍞','🥩','🥬','🍅','🧅']},
+ {name:'Duplo queijo',face:'👩🏻‍🦱',items:['bun','patty','cheese','cheese'],display:['🍞','🥩','🧀','🧀']},
+ {name:'Lanche completo',face:'🧑🏾‍🦰',items:['bun','patty','cheese','egg','lettuce'],display:['🍞','🥩','🧀','🍳','🥬']},
+ {name:'Batata & molho',face:'👨🏼‍🦲',items:['fries','drink'],display:['🍟','🥤']}
+];
+let orders=[],selected=0,assembly=[],coins=0,served=0,time=90,level=1,playing=false,paused=false,tick=null,orderId=0;
+const $=id=>document.getElementById(id);
+function shuffleRecipe(){return recipes[Math.floor(Math.random()*recipes.length)]}
+function makeOrder(){let r=shuffleRecipe();return {id:++orderId,recipe:r,done:false,patience:100}}
+function initOrders(){orders=[makeOrder(),makeOrder(),makeOrder()];selected=0;renderOrders();renderAssembly()}
+function renderOrders(){
+ $('orders').innerHTML='';
+ orders.forEach((o,i)=>{
+  let b=document.createElement('button');b.className='order'+(i===selected?' active':'')+(o.done?' done':'');
+  b.innerHTML=`<div class="face">${o.done?'😊':o.recipe.face}</div><div class="name">${o.done?'Pedido entregue':o.recipe.name}</div><div class="foodline">${o.done?'✅':o.recipe.display.join('')}</div><div class="hearts">${o.done?'Muito obrigado!':'♥ ♥ ♥'}</div><div class="mini">${o.done?'Próximo cliente em breve':'Pedido #'+o.id}</div>`;
+  b.onclick=()=>{if(!playing||paused||o.done)return;selected=i;assembly=[];renderOrders();renderAssembly();$('selectedLabel').textContent='Pedido '+(i+1);toast('Pedido selecionado!')};$('orders').appendChild(b);
+ });
+}
+function renderIngredients(){
+ $('ingredients').innerHTML='';
+ allItems.forEach(item=>{let b=document.createElement('button');b.className='ing';b.innerHTML=`<span class="emoji">${item.emoji}</span><small>${item.name}</small>`;b.onclick=()=>{if(!playing||paused)return;assembly.push(item.id);renderAssembly()};$('ingredients').appendChild(b)});
+}
+function renderAssembly(){
+ let box=$('assembly');box.innerHTML='';
+ if(!assembly.length){box.innerHTML='<div class="empty">Toque nos ingredientes para<br>começar a montar seu lanche!</div>';return}
+ assembly.forEach((id,i)=>{let item=allItems.find(x=>x.id===id);let span=document.createElement('span');span.className='ingredient';span.title=item.name;span.textContent=item.emoji;box.appendChild(span)});
+}
+function toast(msg,bad=false){$('toast').textContent=msg;$('toast').style.color=bad?'#ff9ca5':'#9ff2b9'}
+function sameRecipe(a,b){if(a.length!==b.length)return false;let x=[...a].sort(),y=[...b].sort();return x.every((v,i)=>v===y[i])}
+function serve(){
+ if(!playing||paused)return;let o=orders[selected];if(!o||o.done){toast('Escolha um cliente que ainda está esperando.',true);return}
+ if(sameRecipe(assembly,o.recipe.items)){
+  o.done=true;coins+=10;served++;$('coins').textContent=coins;$('served').textContent=served;toast('Pedido perfeito! +10 moedas 🎉');assembly=[];renderOrders();renderAssembly();$('progress').style.width=Math.min(100,(served%5)*20)+'%';
+  let next=orders.findIndex(x=>!x.done);if(next>=0)selected=next;else{orders=[makeOrder(),makeOrder(),makeOrder()];selected=0}
+  renderOrders();$('selectedLabel').textContent='Pedido '+(selected+1);
+  if(served%5===0){level++;$('level').textContent=level;$('levelTitle').textContent=['Novato do lanche','Mestre da chapa','Chef da cidade','Lenda dos lanches'][Math.min(level-1,3)];time=Math.min(120,time+10);toast('SUBIU DE NÍVEL! +10 segundos 🌟')}
+ }else{toast('Quase! Confira os ingredientes do pedido.',true);let box=$('assembly');box.animate([{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(0)'}],{duration:180})}
+}
+function updateTimer(){time--;let m=Math.floor(time/60),s=time%60;$('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(time<=0)endGame()}
+function startGame(){coins=0;served=0;time=90;level=1;assembly=[];playing=true;paused=false;$('coins').textContent='0';$('served').textContent='0';$('timer').textContent='01:30';$('level').textContent='1';$('levelTitle').textContent='Novato do lanche';$('progress').style.width='0%';$('pauseBtn').textContent='Ⅱ';$('overlay').classList.add('hidden');initOrders();clearInterval(tick);tick=setInterval(()=>{if(playing&&!paused)updateTimer()},1000);toast('Boa sorte, chef!')}
+function endGame(){playing=false;clearInterval(tick);$('modalTitle').textContent='Turno encerrado!';$('modalText').textContent=`Você atendeu ${served} pedido(s) e ganhou ${coins} moedas. ${served>=10?'Você é uma estrela da cozinha!':'Treine mais um pouco e bata seu recorde!'}`;$('startBtn').textContent='Jogar novamente ↻';$('overlay').classList.remove('hidden')}
+$('startBtn').onclick=startGame;
+$('serveBtn').onclick=serve;
+$('undoBtn').onclick=()=>{if(playing&&!paused){assembly.pop();renderAssembly()}};
+$('resetBtn').onclick=()=>{if(playing&&!paused){assembly=[];renderAssembly();toast('Bancada limpa!')}};
+$('pauseBtn').onclick=()=>{if(!playing)return;paused=!paused;$('pauseBtn').textContent=paused?'▶':'Ⅱ';if(paused){$('modalTitle').textContent='Pausa para o lanche ☕';$('modalText').textContent='Respire fundo, chef. O relógio está parado enquanto você descansa.';$('startBtn').textContent='Continuar ▶';$('overlay').classList.remove('hidden')}else{$('overlay').classList.add('hidden')}};
+const originalStart=startGame;
+$('startBtn').onclick=()=>{if(playing&&paused){paused=false;$('pauseBtn').textContent='Ⅱ';$('overlay').classList.add('hidden')}else originalStart()};
+renderIngredients();initOrders();
+</script>
+</body>
+</html>
